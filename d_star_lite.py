@@ -1,5 +1,5 @@
 import heapq
-from utils import stateNameToCoords
+from utils import stateNameToCoords, render_all
 
 
 def topKey(queue):
@@ -15,7 +15,7 @@ def topKey(queue):
 def heuristic_from_s(graph, id, s):
     x_distance = abs(int(id.split('x')[1][0]) - int(s.split('x')[1][0]))
     y_distance = abs(int(id.split('y')[1][0]) - int(s.split('y')[1][0]))
-    return max(x_distance, y_distance)
+    return x_distance + y_distance
 
 
 def calculateKey(graph, id, s_current, k_m):
@@ -37,7 +37,7 @@ def updateVertex(graph, queue, id, s_current, k_m):
         queue.remove(id_in_queue[0])
     if graph.graph[id].rhs != graph.graph[id].g:
         heapq.heappush(queue, calculateKey(graph, id, s_current, k_m) + (id,))
-
+    render_all(graph)
 
 def computeShortestPath(graph, queue, s_start, k_m):
     while (graph.graph[s_start].rhs != graph.graph[s_start].g) or (topKey(queue) < calculateKey(graph, s_start, s_start, k_m)):
@@ -59,6 +59,7 @@ def computeShortestPath(graph, queue, s_start, k_m):
             updateVertex(graph, queue, u, s_start, k_m)
             for i in graph.graph[u].parents:
                 updateVertex(graph, queue, i, s_start, k_m)
+        render_all(graph)
         # graph.printGValues()
 
 

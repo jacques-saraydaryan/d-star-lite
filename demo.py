@@ -70,19 +70,17 @@ if __name__ == "__main__":
     s_start = 'x1y2'
     s_goal = 'x5y4'
     goal_coords = stateNameToCoords(s_goal)
-    graph.goal_coords = goal_coords
+
     graph.setStart(s_start)
     graph.setGoal(s_goal)
     k_m = 0
     s_last = s_start
     queue = []
-    s_current = s_start
-    pos_coords = stateNameToCoords(s_current)
-    graph.pos_coords = pos_coords
+
     graph, queue, k_m = initDStarLite(graph, queue, s_start, s_goal, k_m)
 
-
-
+    s_current = s_start
+    pos_coords = stateNameToCoords(s_current)
 
     basicfont = pygame.font.SysFont('Comic Sans MS', 36)
 
@@ -102,7 +100,6 @@ if __name__ == "__main__":
                     # print('setting s_current to ', s_new)
                     s_current = s_new
                     pos_coords = stateNameToCoords(s_current)
-                    graph.pos_coords = pos_coords
                     # print('got pos coords: ', pos_coords)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -114,55 +111,4 @@ if __name__ == "__main__":
                 # Set that location to one
                 if(graph.cells[row][column] == 0):
                     graph.cells[row][column] = -1
-
-        # Set the screen background
-        render_all(graph)
-        '''
-        screen.fill(BLACK)
-
-        # Draw the grid
-        for row in range(Y_DIM):
-            for column in range(X_DIM):
-                color = WHITE
-                # if grid[row][column] == 1:
-                #     color = GREEN
-                pygame.draw.rect(screen, colors[graph.cells[row][column]],
-                                 [(MARGIN + WIDTH) * column + MARGIN,
-                                  (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT])
-                node_name = 'x' + str(column) + 'y' + str(row)
-                if(graph.graph[node_name].g != float('inf')):
-                    # text = basicfont.render(
-                    # str(graph.graph[node_name].g), True, (0, 0, 200), (255,
-                    # 255, 255))
-                    text = basicfont.render(
-                        str(graph.graph[node_name].g), True, (0, 0, 200))
-                    textrect = text.get_rect()
-                    textrect.centerx = int(
-                        column * (WIDTH + MARGIN) + WIDTH / 2) + MARGIN
-                    textrect.centery = int(
-                        row * (HEIGHT + MARGIN) + HEIGHT / 2) + MARGIN
-                    screen.blit(text, textrect)
-
-        # fill in goal cell with GREEN
-        pygame.draw.rect(screen, GREEN, [(MARGIN + WIDTH) * goal_coords[0] + MARGIN,
-                                         (MARGIN + HEIGHT) * goal_coords[1] + MARGIN, WIDTH, HEIGHT])
-        # print('drawing robot pos_coords: ', pos_coords)
-        # draw moving robot, based on pos_coords
-        robot_center = [int(pos_coords[0] * (WIDTH + MARGIN) + WIDTH / 2) +
-                        MARGIN, int(pos_coords[1] * (HEIGHT + MARGIN) + HEIGHT / 2) + MARGIN]
-        pygame.draw.circle(screen, RED, robot_center, int(WIDTH / 2) - 2)
-
-        # draw robot viewing range
-        pygame.draw.rect(
-            screen, BLUE, [robot_center[0] - VIEWING_RANGE * (WIDTH + MARGIN), robot_center[1] - VIEWING_RANGE * (HEIGHT + MARGIN), 2 * VIEWING_RANGE * (WIDTH + MARGIN), 2 * VIEWING_RANGE * (HEIGHT + MARGIN)], 2)
-
-        # Limit to 60 frames per second
-        clock.tick(20)
-
-        # Go ahead and update the screen with what we've drawn.
-        pygame.display.flip()
-
-    # Be IDLE friendly. If you forget this line, the program will 'hang'
-    # on exit.
-    '''
-    pygame.quit()
+        render_all()
