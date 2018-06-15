@@ -3,7 +3,7 @@ import pygame
 
 from graph import Node, Graph
 from grid import GridWorld
-from utils import stateNameToCoords, render_all
+from utils import *
 from d_star_lite import initDStarLite, moveAndRescan
 
 # Define some colors
@@ -23,8 +23,6 @@ colors = {
 }
 
 # This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 40
-HEIGHT = 40
 
 # This sets the margin between each cell
 MARGIN = 5
@@ -52,9 +50,7 @@ VIEWING_RANGE = 3
 
 
 # Set the HEIGHT and WIDTH of the screen
-WINDOW_SIZE = [(WIDTH + MARGIN) * X_DIM + MARGIN,
-               (HEIGHT + MARGIN) * Y_DIM + MARGIN]
-screen = pygame.display.set_mode(WINDOW_SIZE)
+
 
 # Set title of screen
 pygame.display.set_caption("D* Lite Path Planning")
@@ -112,7 +108,7 @@ if __name__ == "__main__":
                 column = pos[0] // (WIDTH + MARGIN)
                 row = pos[1] // (HEIGHT + MARGIN)
                 # Set that location to one
-                if(graph.cells[row][column] == 0):
+                if(graph.cells[row][column] in [0,2,3]):
                     graph.cells[row][column] = -1
 
         # Set the screen background

@@ -30,6 +30,10 @@ def updateVertex(graph, queue, id, s_current, k_m):
             min_rhs = min(
                 min_rhs, graph.graph[i].g + graph.graph[id].children[i])
         graph.graph[id].rhs = min_rhs
+        y, x = stateNameToCoords(id)
+        if graph.cells[x][y] >= 0:          
+            graph.cells[x][y] = 2 if graph.graph[id].rhs == graph.graph[id].g else 3
+        render_all(graph, highlight=id)
     id_in_queue = [item for item in queue if id in item]
     if id_in_queue != []:
         if len(id_in_queue) != 1:
@@ -37,7 +41,7 @@ def updateVertex(graph, queue, id, s_current, k_m):
         queue.remove(id_in_queue[0])
     if graph.graph[id].rhs != graph.graph[id].g:
         heapq.heappush(queue, calculateKey(graph, id, s_current, k_m) + (id,))
-    render_all(graph)
+    
 
 def computeShortestPath(graph, queue, s_start, k_m):
     while (graph.graph[s_start].rhs != graph.graph[s_start].g) or (topKey(queue) < calculateKey(graph, s_start, s_start, k_m)):
@@ -52,14 +56,22 @@ def computeShortestPath(graph, queue, s_start, k_m):
             heapq.heappush(queue, calculateKey(graph, u, s_start, k_m) + (u,))
         elif graph.graph[u].g > graph.graph[u].rhs:
             graph.graph[u].g = graph.graph[u].rhs
+            y, x = stateNameToCoords(u)
+            if graph.cells[x][y] >= 0:
+                graph.cells[x][y] = 2 if graph.graph[u].rhs == graph.graph[u].g else 3
+            render_all(graph, highlight=u)
             for i in graph.graph[u].parents:
                 updateVertex(graph, queue, i, s_start, k_m)
         else:
             graph.graph[u].g = float('inf')
+            y, x = stateNameToCoords(u)
+            if graph.cells[x][y] >= 0:
+                graph.cells[x][y] = 2 if graph.graph[u].rhs == graph.graph[u].g else 3
+            render_all(graph, highlight=u)
             updateVertex(graph, queue, u, s_start, k_m)
             for i in graph.graph[u].parents:
                 updateVertex(graph, queue, i, s_start, k_m)
-        render_all(graph)
+        
         # graph.printGValues()
 
 
@@ -115,9 +127,12 @@ def scanForObstacles(graph, queue, s_current, scan_range, k_m):
                     neighbor_coords = stateNameToCoords(state)
                     graph.cells[neighbor_coords[1]][neighbor_coords[0]] = -2
                     graph.graph[neighbor].children[state] = float('inf')
+                    render_all(graph,)
                     graph.graph[state].children[neighbor] = float('inf')
+                    render_all(graph)
                     updateVertex(graph, queue, state, s_current, k_m)
                     new_obstacle = True
+                    
         # elif states_to_update[state] == 0: #cell without obstacle
             # for neighbor in graph.graph[state].children:
                 # if(graph.graph[state].children[neighbor] != float('inf')):

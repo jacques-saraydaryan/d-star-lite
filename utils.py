@@ -1,24 +1,28 @@
 
 import pygame
+import time
 #configuring variables
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
-BLUE = (0, 0 , 255)
 GRAY1 = (145, 145, 102)
 GRAY2 = (77, 77, 51)
-BLUE = (0, 0, 80)
+BLUE = (0, 191 , 255)
+LIGHT_YELLOW = (255,255,153)
+LIGHT_GREEN = (144,238,144)
 colors = {
-    0: WHITE,
-    1: GREEN,
-    -1: GRAY1,
-    -2: GRAY2
+    0: WHITE, #non-visted
+    1: GREEN, #Goal
+    2: LIGHT_GREEN, #consistent
+    3: LIGHT_YELLOW, #inconsistent
+    -1: GRAY1,#blocks undiscovered
+    -2: GRAY2 #blocks discovered
 }
 # This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 40
-HEIGHT = 40
+WIDTH = 60
+HEIGHT = 60
 
 # This sets the margin between each cell
 MARGIN = 5
@@ -58,13 +62,13 @@ done = False
 
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
-basicfont = pygame.font.SysFont('Comic Sans MS', 36)
+basicfont = pygame.font.SysFont('Comic Sans MS', 20)
 
 def stateNameToCoords(name):
     return [int(name.split('x')[1].split('y')[0]), int(name.split('x')[1].split('y')[1])]
 
 
-def render_all(graph, highlight=(0, 4)):
+def render_all(graph, highlight=None, delay=0.01):
     global screen
     # Set the screen background
     screen.fill(BLACK)
@@ -75,20 +79,18 @@ def render_all(graph, highlight=(0, 4)):
             color = WHITE
             # if grid[row][column] == 1:
             #     color = GREEN
-            if (row, column) == highlight:
-                color = BLUE
-            else:
-                color = colors[graph.cells[row][column]]
+           
+            color = colors[graph.cells[row][column]]
             pygame.draw.rect(screen, color,
                              [(MARGIN + WIDTH) * column + MARGIN,
                               (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT])
             node_name = 'x' + str(column) + 'y' + str(row)
-            if(graph.graph[node_name].g != float('inf')):
+            if(graph.cells[row][column] in [-1,2,3]):
                 # text = basicfont.render(
                 # str(graph.graph[node_name].g), True, (0, 0, 200), (255,
                 # 255, 255))
-                text = basicfont.render(
-                    str(graph.graph[node_name].g), True, (0, 0, 200))
+                text = basicfont.render("{}:{}".format(graph.graph[node_name].g, graph.graph[node_name].rhs)
+                    , True, (0, 0, 200))
                 textrect = text.get_rect()
                 textrect.centerx = int(
                     column * (WIDTH + MARGIN) + WIDTH / 2) + MARGIN
@@ -114,6 +116,7 @@ def render_all(graph, highlight=(0, 4)):
 
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
+    time.sleep(delay)
 
 # Be IDLE friendly. If you forget this line, the program will 'hang'
 # on exit.
