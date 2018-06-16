@@ -4,7 +4,7 @@ import pygame
 from graph import Node, Graph
 from grid import GridWorld
 from utils import *
-from d_star_lite import initDStarLite, moveAndRescan
+from d_star_lite import *
 
 # Define some colors
 BLACK = (0, 0, 0)

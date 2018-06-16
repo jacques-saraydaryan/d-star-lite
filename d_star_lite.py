@@ -2,7 +2,8 @@ import heapq
 from utils import stateNameToCoords, render_all
 
 
-def topKey(queue):
+def topKey(queue, graph, s_current):
+    queue = [(x[1]+heuristic_from_s(graph, x[2], s_current), x[1], x[2]) for x in queue]
     queue.sort()
     # print(queue)
     if len(queue) > 0:
@@ -13,16 +14,18 @@ def topKey(queue):
 
 
 def heuristic_from_s(graph, id, s):
+
     x_distance = abs(int(id.split('x')[1][0]) - int(s.split('x')[1][0]))
     y_distance = abs(int(id.split('y')[1][0]) - int(s.split('y')[1][0]))
     return x_distance + y_distance
 
 
 def calculateKey(graph, id, s_current, k_m):
-    return (min(graph.graph[id].g, graph.graph[id].rhs) + heuristic_from_s(graph, id, s_current) + k_m, min(graph.graph[id].g, graph.graph[id].rhs))
+    return (min(graph.graph[id].g, graph.graph[id].rhs) + heuristic_from_s(graph, id, s_current) , min(graph.graph[id].g, graph.graph[id].rhs))
 
 
 def updateVertex(graph, queue, id, s_current, k_m):
+    print("Update", id)
     s_goal = graph.goal
     if id != s_goal:
         min_rhs = float('inf')
@@ -33,7 +36,7 @@ def updateVertex(graph, queue, id, s_current, k_m):
         y, x = stateNameToCoords(id)
         if graph.cells[x][y] >= 0:
             graph.cells[x][y] = 2 if graph.graph[id].rhs == graph.graph[id].g else 3
-        render_all(graph, highlight=id)
+        render_all(graph, status="Update Vertex")
     id_in_queue = [item for item in queue if id in item]
     if id_in_queue != []:
         if len(id_in_queue) != 1:
@@ -44,22 +47,27 @@ def updateVertex(graph, queue, id, s_current, k_m):
 
 
 def computeShortestPath(graph, queue, s_start, k_m):
-    while (graph.graph[s_start].rhs != graph.graph[s_start].g) or (topKey(queue) < calculateKey(graph, s_start, s_start, k_m)):
+    print("CPS-1")
+
+
+    while  (graph.graph[s_start].rhs != graph.graph[s_start].g or topKey(queue, graph, s_start)< calculateKey(graph, s_start, s_start, k_m)):
+
+
         # print(graph.graph[s_start])
         # print('topKey')
         # print(topKey(queue))
         # print('calculateKey')
         # print(calculateKey(graph, s_start, 0))
-        k_old = topKey(queue)
+        k_old = topKey(queue, graph, s_start)
+        print k_old
+        #print(k_old)
         u = heapq.heappop(queue)[2]
-        if k_old < calculateKey(graph, u, s_start, k_m):
-            heapq.heappush(queue, calculateKey(graph, u, s_start, k_m) + (u,))
-        elif graph.graph[u].g > graph.graph[u].rhs:
+        if graph.graph[u].g > graph.graph[u].rhs:
             graph.graph[u].g = graph.graph[u].rhs
             y, x = stateNameToCoords(u)
             if graph.cells[x][y] >= 0:
                 graph.cells[x][y] = 2 if graph.graph[u].rhs == graph.graph[u].g else 3
-            render_all(graph, highlight=u)
+            render_all(graph, status="Computer Shortest Path")
             for i in graph.graph[u].parents:
                 updateVertex(graph, queue, i, s_start, k_m)
         else:
@@ -67,7 +75,7 @@ def computeShortestPath(graph, queue, s_start, k_m):
             y, x = stateNameToCoords(u)
             if graph.cells[x][y] >= 0:
                 graph.cells[x][y] = 2 if graph.graph[u].rhs == graph.graph[u].g else 3
-            render_all(graph, highlight=u)
+            render_all(graph, status="Computer Shortest Path")
             updateVertex(graph, queue, u, s_start, k_m)
             for i in graph.graph[u].parents:
                 updateVertex(graph, queue, i, s_start, k_m)
@@ -127,9 +135,9 @@ def scanForObstacles(graph, queue, s_current, scan_range, k_m):
                     neighbor_coords = stateNameToCoords(state)
                     graph.cells[neighbor_coords[1]][neighbor_coords[0]] = -2
                     graph.graph[neighbor].children[state] = float('inf')
-                    render_all(graph,)
+                    render_all(graph, status="Update Edge Cost due to Changes")
                     graph.graph[state].children[neighbor] = float('inf')
-                    render_all(graph)
+                    render_all(graph, status="Update Edge Cost due to Changes")
                     updateVertex(graph, queue, state, s_current, k_m)
                     new_obstacle = True
 

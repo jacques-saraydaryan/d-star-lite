@@ -51,7 +51,7 @@ VIEWING_RANGE = 3
 
 # Set the HEIGHT and WIDTH of the screen
 WINDOW_SIZE = [(WIDTH + MARGIN) * X_DIM + MARGIN,
-               (HEIGHT + MARGIN) * Y_DIM + MARGIN]
+               (HEIGHT + MARGIN) * Y_DIM + MARGIN + 30*MARGIN]
 screen = pygame.display.set_mode(WINDOW_SIZE)
 
 # Set title of screen
@@ -68,7 +68,7 @@ def stateNameToCoords(name):
     return [int(name.split('x')[1].split('y')[0]), int(name.split('x')[1].split('y')[1])]
 
 
-def render_all(graph, highlight=None, delay=0.01):
+def render_all(graph, highlight=None, delay=0, status="D-Star-Lite"):
     global screen
     # Set the screen background
     screen.fill(BLACK)
@@ -79,13 +79,14 @@ def render_all(graph, highlight=None, delay=0.01):
             color = WHITE
             # if grid[row][column] == 1:
             #     color = GREEN
-           
+
             color = colors[graph.cells[row][column]]
             pygame.draw.rect(screen, color,
                              [(MARGIN + WIDTH) * column + MARGIN,
                               (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT])
             node_name = 'x' + str(column) + 'y' + str(row)
-            if(graph.cells[row][column] in [-1,2,3]):
+            if True:
+            #if(graph.cells[row][column] in [-1,2,3]):
                 # text = basicfont.render(
                 # str(graph.graph[node_name].g), True, (0, 0, 200), (255,
                 # 255, 255))
@@ -111,6 +112,8 @@ def render_all(graph, highlight=None, delay=0.01):
     pygame.draw.rect(
         screen, BLUE, [robot_center[0] - VIEWING_RANGE * (WIDTH + MARGIN), robot_center[1] - VIEWING_RANGE * (HEIGHT + MARGIN), 2 * VIEWING_RANGE * (WIDTH + MARGIN), 2 * VIEWING_RANGE * (HEIGHT + MARGIN)], 2)
 
+    title = pygame.font.SysFont('Comic Sans MS', 80).render(status, True, (255, 255, 255))
+    screen.blit(title, (WINDOW_SIZE[0]/2  -200, WINDOW_SIZE[1]-90))
     # Limit to 60 frames per second
     clock.tick(20)
 
