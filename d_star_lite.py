@@ -31,7 +31,7 @@ def updateVertex(graph, queue, id, s_current, k_m):
                 min_rhs, graph.graph[i].g + graph.graph[id].children[i])
         graph.graph[id].rhs = min_rhs
         y, x = stateNameToCoords(id)
-        if graph.cells[x][y] >= 0:          
+        if graph.cells[x][y] >= 0:
             graph.cells[x][y] = 2 if graph.graph[id].rhs == graph.graph[id].g else 3
         render_all(graph, highlight=id)
     id_in_queue = [item for item in queue if id in item]
@@ -41,7 +41,7 @@ def updateVertex(graph, queue, id, s_current, k_m):
         queue.remove(id_in_queue[0])
     if graph.graph[id].rhs != graph.graph[id].g:
         heapq.heappush(queue, calculateKey(graph, id, s_current, k_m) + (id,))
-    
+
 
 def computeShortestPath(graph, queue, s_start, k_m):
     while (graph.graph[s_start].rhs != graph.graph[s_start].g) or (topKey(queue) < calculateKey(graph, s_start, s_start, k_m)):
@@ -71,7 +71,7 @@ def computeShortestPath(graph, queue, s_start, k_m):
             updateVertex(graph, queue, u, s_start, k_m)
             for i in graph.graph[u].parents:
                 updateVertex(graph, queue, i, s_start, k_m)
-        
+
         # graph.printGValues()
 
 
@@ -132,7 +132,7 @@ def scanForObstacles(graph, queue, s_current, scan_range, k_m):
                     render_all(graph)
                     updateVertex(graph, queue, state, s_current, k_m)
                     new_obstacle = True
-                    
+
         # elif states_to_update[state] == 0: #cell without obstacle
             # for neighbor in graph.graph[state].children:
                 # if(graph.graph[state].children[neighbor] != float('inf')):
@@ -145,6 +145,9 @@ def moveAndRescan(graph, queue, s_current, scan_range, k_m):
     if(s_current == graph.goal):
         return 'goal', k_m
     else:
+        results = scanForObstacles(graph, queue, s_current, scan_range, k_m)
+        k_m += heuristic_from_s(graph, s_current, graph.goal)
+        computeShortestPath(graph, queue, s_current, k_m)
         s_last = s_current
         s_new = nextInShortestPath(graph, s_current)
         new_coords = stateNameToCoords(s_new)
@@ -152,10 +155,8 @@ def moveAndRescan(graph, queue, s_current, scan_range, k_m):
         if(graph.cells[new_coords[1]][new_coords[0]] == -1):  # just ran into new obstacle
             s_new = s_current  # need to hold tight and scan/replan first
 
-        results = scanForObstacles(graph, queue, s_new, scan_range, k_m)
         # print(graph)
-        k_m += heuristic_from_s(graph, s_last, s_new)
-        computeShortestPath(graph, queue, s_current, k_m)
+
 
         return s_new, k_m
 

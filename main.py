@@ -65,6 +65,7 @@ if __name__ == "__main__":
     graph = GridWorld(X_DIM, Y_DIM)
     s_start = 'x1y2'
     s_goal = 'x5y4'
+    graph.goal = s_goal
     goal_coords = stateNameToCoords(s_goal)
     graph.goal_coords = goal_coords
     graph.setStart(s_start)
