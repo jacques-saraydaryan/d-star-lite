@@ -25,7 +25,6 @@ def calculateKey(graph, id, s_current, k_m):
 
 
 def updateVertex(graph, queue, id, s_current, k_m):
-    print("Update", id)
     s_goal = graph.goal
     if id != s_goal:
         min_rhs = float('inf')
@@ -47,7 +46,7 @@ def updateVertex(graph, queue, id, s_current, k_m):
 
 
 def computeShortestPath(graph, queue, s_start, k_m):
-    print("CPS-1")
+
 
 
     while  (graph.graph[s_start].rhs != graph.graph[s_start].g or topKey(queue, graph, s_start)< calculateKey(graph, s_start, s_start, k_m)):
@@ -59,7 +58,7 @@ def computeShortestPath(graph, queue, s_start, k_m):
         # print('calculateKey')
         # print(calculateKey(graph, s_start, 0))
         k_old = topKey(queue, graph, s_start)
-        print k_old
+
         #print(k_old)
         u = heapq.heappop(queue)[2]
         if graph.graph[u].g > graph.graph[u].rhs:

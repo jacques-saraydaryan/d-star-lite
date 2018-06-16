@@ -85,8 +85,7 @@ def render_all(graph, highlight=None, delay=0, status="D-Star-Lite"):
                              [(MARGIN + WIDTH) * column + MARGIN,
                               (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT])
             node_name = 'x' + str(column) + 'y' + str(row)
-            if True:
-            #if(graph.cells[row][column] in [-1,2,3]):
+            if(graph.cells[row][column] in [-1,2,3]):
                 # text = basicfont.render(
                 # str(graph.graph[node_name].g), True, (0, 0, 200), (255,
                 # 255, 255))
