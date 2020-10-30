@@ -11,3 +11,10 @@ The D* Lite algorithm was written to be a "novel fast replanning method for robo
 ~~~bash
 $python main.py
 ~~~
+
+
+### Some update
+- right arrow to step in the dstar algorihm
+- queue.txt display current queue states
+
+<img src="DStarliteSample.gif" width="400px"/>

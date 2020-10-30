@@ -27,14 +27,16 @@ colors = {
 # This sets the margin between each cell
 MARGIN = 5
 
+
+GRID_SIZE = 10
 # Create a 2 dimensional array. A two dimensional
 # array is simply a list of lists.
 grid = []
-for row in range(10):
+for row in range(GRID_SIZE):
     # Add an empty array that will hold each cell
     # in this row
     grid.append([])
-    for column in range(10):
+    for column in range(GRID_SIZE):
         grid[row].append(0)  # Append a cell
 
 # Set row 1, cell 5 to one. (Remember rows and
@@ -46,7 +48,7 @@ pygame.init()
 
 X_DIM = 12
 Y_DIM = 12
-VIEWING_RANGE = 3
+#VIEWING_RANGE = 3
 
 
 # Set the HEIGHT and WIDTH of the screen
@@ -61,36 +63,90 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
+d_s_obj=d_star_obj()
+
 if __name__ == "__main__":
     graph = GridWorld(X_DIM, Y_DIM)
-    s_start = 'x1y2'
-    s_goal = 'x5y4'
+    s_start = 'x3y1'
+    s_goal = 'x0y6'
     graph.goal = s_goal
     goal_coords = stateNameToCoords(s_goal)
     graph.goal_coords = goal_coords
     graph.setStart(s_start)
     graph.setGoal(s_goal)
+
+    for i in range(len(graph.cells)):
+            row = graph.cells[i]
+            for j in range(len(row)):
+                graph.cells[i][j]=-2
+
+    
+    #graph.cells[2][2]=-2
+    #graph.cells[3][0]=-2
+    #graph.cells[3][2]=-2
+    #graph.cells[4][0]=-2
+    #graph.cells[4][2]=-2
+    #graph.cells[5][0]=-2
+    #graph.cells[5][2]=-2
+
+
+    graph.cells[1][0]=0
+    graph.cells[1][1]=0
+    graph.cells[1][2]=0
+    graph.cells[1][3]=0
+
+    graph.cells[6][0]=0
+    graph.cells[6][1]=0
+    graph.cells[6][2]=0
+    graph.cells[6][3]=0
+
+    graph.cells[5][1]=0
+    graph.cells[4][1]=0
+    graph.cells[3][1]=0
+    graph.cells[2][1]=0
+
+    graph.cells[5][3]=0
+    graph.cells[4][3]=0
+    graph.cells[3][3]=0
+    graph.cells[2][3]=0
+
+    
+    #Remove obstacle from graphn nodes children and parents list
+    for node in graph.graph:
+        coords = stateNameToCoords(node)
+        if graph.cells[coords[1]][coords[0]] == -2:
+             for graph_node in graph.graph:
+                if node in graph.graph[graph_node].children:
+                    del graph.graph[graph_node].children[node]
+                if node in graph.graph[graph_node].parents:
+                    del graph.graph[graph_node].parents[node]
+
     k_m = 0
     s_last = s_start
     queue = []
     s_current = s_start
     pos_coords = stateNameToCoords(s_current)
     graph.pos_coords = pos_coords
-    graph, queue, k_m = initDStarLite(graph, queue, s_start, s_goal, k_m)
+    graph, queue, k_m = d_s_obj.initDStarLite(graph, queue, s_start, s_goal, k_m)
 
 
 
 
     basicfont = pygame.font.SysFont('Comic Sans MS', 36)
-
+    #global STEP_ALGO 
+    #lock_A.acquire()
     # -------- Main Program Loop -----------
     while not done:
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                d_s_obj.step_is_on=True
+            elif event.type == pygame.KEYUP and event.key == pygame.K_RIGHT:
+                d_s_obj.step_is_on=False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 # print('space bar! call next action')
-                s_new, k_m = moveAndRescan(
+                s_new, k_m = d_s_obj.moveAndRescan(
                     graph, queue, s_current, VIEWING_RANGE, k_m)
                 if s_new == 'goal':
                     print('Goal Reached!')
@@ -109,8 +165,9 @@ if __name__ == "__main__":
                 column = pos[0] // (WIDTH + MARGIN)
                 row = pos[1] // (HEIGHT + MARGIN)
                 # Set that location to one
-                if(graph.cells[row][column] in [0,2,3]):
-                    graph.cells[row][column] = -1
+                if column >0 and  column <= GRID_SIZE and row >0 and  row <= GRID_SIZE:
+                    if(graph.cells[row][column] in [0,2,3]):
+                        graph.cells[row][column] = -1
 
         # Set the screen background
         render_all(graph)

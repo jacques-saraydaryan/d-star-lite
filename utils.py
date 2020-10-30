@@ -1,6 +1,7 @@
 
 import pygame
 import time
+import os
 #configuring variables
 
 BLACK = (0, 0, 0)
@@ -44,9 +45,11 @@ grid[1][5] = 1
 # Initialize pygame
 pygame.init()
 
-X_DIM = 12
-Y_DIM = 12
-VIEWING_RANGE = 3
+X_DIM = 8 #12
+Y_DIM = 8 #12
+VIEWING_RANGE = 2
+
+FILE_PATH = os.path.dirname(__file__) + "/queue.txt"
 
 
 # Set the HEIGHT and WIDTH of the screen
@@ -122,3 +125,11 @@ def render_all(graph, highlight=None, delay=0, status="D-Star-Lite"):
 
 # Be IDLE friendly. If you forget this line, the program will 'hang'
 # on exit.
+
+
+def replace_file_content_msg(msg):
+    replace_file_content( msg, FILE_PATH)
+
+def replace_file_content( msg, file_path):
+    with open(file_path, 'w') as filetowrite:
+        filetowrite.write(msg)
